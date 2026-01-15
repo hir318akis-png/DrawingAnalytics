@@ -1,0 +1,87 @@
+/* 全体の背景と文字の基本設定 */
+body {
+    background-color: #f0f4f8; /* 落ち着いた薄い水色 */
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    /* 画面の真ん中に要素を置くための設定 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* 画面の高さ100%分 */
+    margin: 0;
+}
+
+/* ログインパネル（白い箱）の設定 */
+.login-container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 20px; /* 角を丸くして柔らかい印象に */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* ほんのり影をつける */
+    width: 350px;
+    text-align: center;
+}
+
+/* タイトルの文字色（パステルブルー） */
+h1 {
+    color: #a2c2e1;
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+}
+
+/* 各入力項目の間隔 */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* 「担当者コード」などのラベル文字 */
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #888;
+    font-size: 0.9em;
+}
+
+/* 入力ボックス本体の装飾 */
+input {
+    width: 100%;
+    padding: 12px;
+    box-sizing: border-box; /* paddingを含めたサイズ計算にする設定（重要！） */
+    border: 2px solid #e1e8ed; /* 薄いグレーの枠線 */
+    border-radius: 8px;
+    outline: none; /* クリックした時の標準の青枠を消す */
+    transition: border-color 0.3s; /* 色の変化を滑らかにする */
+}
+
+/* 入力欄をクリック（フォーカス）した時の動き */
+input:focus {
+    border-color: #a2c2e1; /* 枠線をパステルブルーに変える */
+}
+
+/* ログイン・終了ボタン共通の土台 */
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer; /* マウスを乗せた時に指マークにする */
+    font-weight: bold;
+    transition: opacity 0.3s;
+}
+
+/* ログインボタン（パステルグリーン） */
+.btn-primary {
+    background-color: #b8e2c8;
+    color: #4a7c59;
+}
+
+/* 終了ボタン（パステルグレー） */
+.btn-secondary {
+    background-color: #e2e2e2;
+    color: #666;
+}
+
+/* ボタンにマウスが乗った時に少し薄くする */
+button:hover {
+    opacity: 0.8;
+}
