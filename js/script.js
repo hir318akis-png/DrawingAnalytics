@@ -28,9 +28,7 @@ $(document).ready(function() {
         }
 
         // ③ 両方入力されていたらログイン成功の処理
-        alert('ログイン成功！次画面へ遷移します。');
-        // 本来はここで別のページに飛ばします
-        // window.location.href = "next_page.html";
+        window.location.href = "main/main.html";
     });
 
     // 「終了ボタン」が押された時の処理
