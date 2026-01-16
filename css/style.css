@@ -16,15 +16,15 @@ body {
     padding: 40px;
     border-radius: 20px; /* 角を丸くして柔らかい印象に */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* ほんのり影をつける */
-    width: 350px;
+    width: 500px;
     text-align: center;
 }
 
 /* タイトルの文字色（パステルブルー） */
 h1 {
-    color: #a2c2e1;
+    color: #6b95bf;
     margin-bottom: 30px;
-    font-size: 1.5rem;
+    font-size: 2rem;
 }
 
 /* 各入力項目の間隔 */
@@ -37,7 +37,7 @@ h1 {
 label {
     display: block;
     margin-bottom: 8px;
-    color: #888;
+    color: #2b2b2b;
     font-size: 0.9em;
 }
 
@@ -71,8 +71,8 @@ button {
 
 /* ログインボタン（パステルグリーン） */
 .btn-primary {
-    background-color: #b8e2c8;
-    color: #4a7c59;
+    background-color: #32cd6e;
+    color: #ffffff;
 }
 
 /* 終了ボタン（パステルグレー） */
