@@ -132,3 +132,49 @@ width: 100%;
 #file-input {
     display: none;
 }
+
+
+
+
+
+/* --- 追加：ローディングオーバーレイのスタイル --- */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* 背景を少し白く透過させる */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* 一番手前に表示 */
+    cursor: wait;  /* マウスカーソルを待機状態にする */
+}
+
+/* 表示・非表示の切り替え用クラス */
+.overlay-hidden {
+    display: none !important;
+}
+
+.loader-content {
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 砂時計のアニメーション */
+.hourglass {
+    font-size: 50px;
+    display: inline-block;
+    animation: rotate-hourglass 2s infinite linear;
+    margin-bottom: 10px;
+}
+
+@keyframes rotate-hourglass {
+    0% { transform: rotate(0deg); }
+    45% { transform: rotate(180deg); }
+    50% { transform: rotate(180deg); }
+    95% { transform: rotate(360deg); }
+    100% { transform: rotate(360deg); }
+}

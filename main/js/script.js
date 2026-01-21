@@ -107,6 +107,9 @@ $(document).ready(function () {
             return;
         }
 
+        // --- 【追加】解析開始時の処理 ---
+        const $overlay = $('#loading-overlay');
+        $overlay.removeClass('overlay-hidden'); // オーバーレイを表示
         $resultArea.html("<p>解析中... しばらくお待ちください。</p>");
 
         try {
@@ -147,7 +150,7 @@ $(document).ready(function () {
                 - 形状的に「加工ツールが入らない」「逃げがない」といった、製作上の懸念点があれば列挙してください。
 
                 # Output Format
-                以下の形式でレポートしてください。
+                以下の形式でレポートしてください。簡潔にわかりやすく文章をまとめてください。
                 1. 【重大な不整合】（寸法間違いなど）
                 2. 【表現の修正提案】（注記の統一など）
                 3. 【知見に基づくアドバイス】（製作上の注意点）
@@ -168,8 +171,18 @@ $(document).ready(function () {
         } catch (error) {
             console.error(error);
             $resultArea.text("エラーが発生しました: " + error.message);
+        } finally {
+        // --- 【追加】完了時（成功・失敗問わず）にオーバーレイを隠す ---
+        $overlay.addClass('overlay-hidden');
         }
     });
+
+    // --- 【追加】解析中に画面（オーバーレイ）をクリックした時の警告 ---
+    $('#loading-overlay').on('click', () => {
+        alert("現在AIが解析を行っています。完了までそのままお待ちください。");
+    });
+
+
 
     $('#btn-save-pdf').on('click', function () {
         // 解析結果が空の場合は警告
