@@ -6,7 +6,7 @@ import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 // PDF.jsのバックグラウンド処理用ファイルを指定
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-$(document).ready(function() {
+$(document).ready(function () {
     const $dropArea = $('#drop-area');
     const $fileInput = $('#file-input');
     const $resultArea = $('#result-area');
@@ -42,9 +42,7 @@ $(document).ready(function() {
     $fileInput.on('change', (e) => {
         const file = e.target.files[0]; // 選択された1つ目のファイルを取得
         handleFile(file);               // 既存のPDF表示・バリデーション関数へ渡す
-
-        // 【ポイント】同じファイルを連続で選択しても反応するように、入力をリセットしておく
-        $(e.target).val('');
+        $(e.target).val('');            // 【ポイント】同じファイルを連続で選択しても反応するように、入力をリセットしておく
     });
 
     // 取り込んだファイルがPDFかチェックし、表示処理へ回す関数
@@ -63,7 +61,7 @@ $(document).ready(function() {
     // --- 2. PDFを画像として表示する処理 ---
     async function renderPDF(file) {
         const reader = new FileReader();
-        reader.onload = async function() {
+        reader.onload = async function () {
             const typedarray = new Uint8Array(this.result);
             // PDFを読み込む
             const pdf = await pdfjsLib.getDocument(typedarray).promise;
@@ -113,17 +111,50 @@ $(document).ready(function() {
 
         try {
             // APIキーの設定（※外部に漏らさないよう注意）
-            const API_KEY = "GEMINI_API_KEY"; 
+            const API_KEY = GEMINI_API_KEY;
             const genAI = new GoogleGenerativeAI(API_KEY);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
             // 送信用にBase64形式へ変換
             const base64Data = await toBase64(selectedFile);
-            
             // ------------------------------------------------
             // 【後日編集エリア】プロンプトの指示内容
             // ------------------------------------------------
-            const prompt = "このPDF図面の内容を詳しく確認し、不備や特徴をリストアップしてください。";
+            const prompt = `
+                # Role
+                あなたは30年の経験を持つベテランの機械設計検図エンジニアです。
+                設計者の作成した図面を細部まで精査し、不整合や潜在的なリスクを指摘してください。
+
+                # Goals
+                1. 図面内の異なる箇所に記載された寸法値の整合性確認
+                2. 注記（一般注記・個別注記）の表現の統一と曖昧さの排除
+                3. 過去の類似事例に基づく製造トラブルの予見とアドバイス
+
+                # Input Data
+                - [添付画像/PDF]: 設計図面
+
+                # Checkpoints
+                ### 1. 寸法値の整合性チェック
+                - 正面図、平面図、断面図、および詳細図の間で、同じ部位を指す寸法値に食い違いがないか厳密に照合してください。
+                - 合計寸法（外形）と、積み上げられた中間寸法の合計が一致しているか計算してください。
+
+                ### 2. 注記・表現の整合性チェック
+                - 語尾（「～のこと」「～とする」）の統一性を確認してください。
+                - 読み手（加工現場）によって解釈が分かれる曖昧な表現（「適宜」「十分に」など）を特定し、具体的な数値や基準への書き換え案を提示してください。
+
+                ### 3. 製造リスク・知見のアドバイス
+                - 過去の類似した図面から、今回の設計で同様のトラブル（加工困難、干渉、強度不足、バリ取り不可など）が発生する可能性を指摘してください。
+                - 形状的に「加工ツールが入らない」「逃げがない」といった、製作上の懸念点があれば列挙してください。
+
+                # Output Format
+                以下の形式でレポートしてください。
+                1. 【重大な不整合】（寸法間違いなど）
+                2. 【表現の修正提案】（注記の統一など）
+                3. 【知見に基づくアドバイス】（製作上の注意点）
+
+                日本語で回答してください。
+            `;
+
             // ------------------------------------------------
 
             // Geminiへ送信
@@ -131,7 +162,6 @@ $(document).ready(function() {
                 prompt,
                 { inlineData: { data: base64Data.split(',')[1], mimeType: "application/pdf" } }
             ]);
-
             const response = await result.response;
             $resultArea.text(response.text()); // 解析結果を表示
 
@@ -141,7 +171,7 @@ $(document).ready(function() {
         }
     });
 
-    $('#btn-save-pdf').on('click', function() {
+    $('#btn-save-pdf').on('click', function () {
         // 解析結果が空の場合は警告
         if ($resultArea.find('.result-placeholder').length > 0 || $resultArea.text() === "解析中...") {
             alert("保存する解析結果がありません。");
@@ -151,11 +181,11 @@ $(document).ready(function() {
         // PDF変換の設定
         const element = document.getElementById('export-area');
         const opt = {
-            margin:       10,
-            filename:     '検図結果_' + new Date().getTime() + '.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 }, // 解像度を上げる
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            margin: 10,
+            filename: '検図結果_' + new Date().getTime() + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 }, // 解像度を上げる
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
         // PDF生成・実行
