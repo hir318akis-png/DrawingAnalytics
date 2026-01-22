@@ -149,12 +149,14 @@ $(document).ready(function () {
                 - 過去の類似した図面から、今回の設計で同様のトラブル（加工困難、干渉、強度不足、バリ取り不可など）が発生する可能性を指摘してください。
                 - 形状的に「加工ツールが入らない」「逃げがない」といった、製作上の懸念点があれば列挙してください。
 
-                # Output Format （JSONデータのみを返してください。余計な説明文は不要です。）
+                # Output Format
+                必ず以下のJSON形式のみで回答してください。余計な説明文は不要です。
                 [
                     {
-                        "category": "重大な不整合",
-                        "text": "正面図の寸法が100ですが、平面図では105になっています。",
-                        "box_2d": [ymin, xmin, ymax, xmax]
+                        "category": "重大な不整合",   // ←表示用のカテゴリ名
+                        "severity": "high",           // ←【追加】システム判定用レベル (high | medium | low のいずれか)
+                        "text": "...",                // 指摘内容
+                        "box_2d": [ymin, xmin, ymax, xmax] // 座標
                     }
                 ]
                 ※box_2dは、図面の左上を[0,0]、右下を[1000,1000]とした時の範囲を数値で入れてください。
@@ -181,10 +183,24 @@ $(document).ready(function () {
             // 表示エリアを一度空にする
             $resultArea.empty();
 
+            // 【追加】もし結果が空だった場合の表示
+            if (!Array.isArray(analysisResults) || analysisResults.length === 0) {
+                $resultArea.html('<p style="padding:20px;">指摘事項は見つかりませんでした。</p>');
+            }
+
             analysisResults.forEach((item) => {
+                // severityの値がもし無い場合は 'low' 扱いにする（エラー回避）
+                const severityLevel = item.severity || 'low';
+
                 // 1. 結果リストの要素を作る
-                const $div = $(`<div class="result-item"><strong>【${item.category}】</strong><br>${item.text}</div>`);
-                
+                // 【ポイント】 severity-high などのクラスを動的に埋め込む
+                const $div = $(`
+                    <div class="result-item severity-${severityLevel}">
+                        <span class="result-category">【${item.category}】</span>
+                        <div class="result-text">${item.text}</div>
+                    </div>
+                `);
+
                 // 2. 図面の上に置く「赤い枠」を作る
                 const $highlight = $('<div class="highlight-box"></div>').appendTo('#preview-container');
 

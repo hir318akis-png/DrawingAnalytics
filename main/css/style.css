@@ -72,11 +72,13 @@ body {
 
 /* ボタンのスタイル */
 .button-group {
+    display: flex;
     margin-top: 20px;
     padding: 15px;
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    gap:15px;
 }
 
 .btn {
@@ -106,6 +108,7 @@ body {
 #btn-exit {
     background-color: #6c757d;
     color: white;
+    margin-left: auto; /* ← 【追加】これだけで右端に寄ります */
 }
 
 /* 保存時のレイアウト崩れを防ぐための設定 */
@@ -118,11 +121,6 @@ body {
     border-radius: 12px;
     border: 1px solid #ddd;
     overflow: hidden;    /* はみ出しを隠す */
-}
-
-#btn-exit {
-    background-color: #6c757d;
-    color: white;
 }
 
 /* 結果表示エリア */
@@ -212,4 +210,65 @@ body {
 /* マウスを乗せた時に色を変える */
 .result-item:hover {
     background-color: #fff1f1;
+}
+
+
+/* --- 追加：重要度別のリストデザイン --- */
+
+/* 既存の .result-item を少し調整 */
+.result-item {
+    padding: 15px;              /* 少し広めに */
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 6px solid transparent; /* 左側の色バーの準備 */
+    background-color: #fff;     /* デフォルト背景 */
+}
+
+/* ホバー時の共通設定 */
+.result-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* 少し浮かび上がるエフェクト */
+    transform: translateX(2px); /* 少し右に動く */
+}
+
+/* --- レベル別の色設定 --- */
+
+/* 重大 (high): 赤色系 */
+.result-item.severity-high {
+    border-left-color: #e74c3c; /* 濃い赤のバー */
+    background-color: #fff8f8;  /* 薄い赤の背景 */
+}
+.result-item.severity-high .result-category {
+    color: #c0392b;             /* カテゴリ文字色 */
+}
+
+/* 警告・修正提案 (medium): オレンジ系 */
+.result-item.severity-medium {
+    border-left-color: #f39c12;
+    background-color: #fffaf0;
+}
+.result-item.severity-medium .result-category {
+    color: #d68910;
+}
+
+/* アドバイス・知見 (low): 青色系 */
+.result-item.severity-low {
+    border-left-color: #3498db;
+    background-color: #f0f8ff;
+}
+.result-item.severity-low .result-category {
+    color: #2980b9;
+}
+
+/* --- リスト内の文字レイアウト調整 --- */
+.result-category {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+.result-text {
+    font-size: 0.95em;
+    line-height: 1.5;
+    color: #555;
 }
