@@ -4,22 +4,30 @@ body {
     background-color: #f0f2f5;
     display: flex;
     justify-content: center;
-    padding: 20px;
+    padding: 10px;
     margin: 0;
 }
 
 .container {
-    width: 90%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    width: 98%;      /* 画面を広く使う */
+    max-width: 1400px; 
+}
+
+/* --- 2. 左右並びのレイアウト設定（追加） --- */
+.main-layout {
+    display: flex;       /* 横並びにする */
+    gap: 20px;           /* 左右の隙間 */
+    height: 700px;       /* 全体の高さを固定（これがないとスクロールしません） */
+    align-items: stretch;
 }
 
 /* ファイル取込および表示エリア */
+
 #drop-area {
-width: 100%;
-    height: 600px;
+    flex: 2;             /* 2/3の幅 */
+    margin: 0;           /* 余計なマージンを消す */
+    height: 100%;        /* 親の高さに合わせる */
+    width: 100%;
     border: 3px dashed #b5b5b5;
     border-radius: 12px;
     background-color: #ffffff;
@@ -27,7 +35,6 @@ width: 100%;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    /* overflow: auto;  <- 削除（スクロールバーは出さない） */
     overflow: hidden; /* <- 追加（はみ出した部分は隠す＝枠内に収める前段階） */
     transition: all 0.3s ease;
     padding: 10px; /* <- 追加（枠の内側に少し余白を作る） */
@@ -65,9 +72,11 @@ width: 100%;
 
 /* ボタンのスタイル */
 .button-group {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
+    margin-top: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
 }
 
 .btn {
@@ -101,7 +110,14 @@ width: 100%;
 
 /* 保存時のレイアウト崩れを防ぐための設定 */
 #export-area {
+    flex: 1;             /* 1/3の幅 */
+    height: 100%;        /* 親の高さに合わせる */
+    display: flex;       /* 中身を縦に並べる */
+    flex-direction: column;
     background-color: white;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    overflow: hidden;    /* はみ出しを隠す */
 }
 
 #btn-exit {
@@ -111,17 +127,11 @@ width: 100%;
 
 /* 結果表示エリア */
 #result-area {
-    width: 100%;
-    min-height: 150px;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box;
-    white-space: pre-wrap; /* 改行を有効にする */
-    font-size: 14px;
-    line-height: 1.6;
-    color: #333;
+    flex: 1;             /* 余った縦スペースをすべて使う */
+    overflow-y: auto;    /* 縦方向にスクロールを出す */
+    padding: 15px;
+    border: none;        /* 外枠はexport-areaに任せる */
+    height: 100%;
 }
 
 .result-placeholder {
@@ -177,4 +187,29 @@ width: 100%;
     50% { transform: rotate(180deg); }
     95% { transform: rotate(360deg); }
     100% { transform: rotate(360deg); }
+}
+
+
+
+/* --- 指摘箇所のハイライト枠（初期状態は非表示） --- */
+.highlight-box {
+    position: absolute;
+    border: 3px solid #ff4757; /* 目立つ赤 */
+    background-color: rgba(255, 71, 87, 0.2); /* ほんのり透ける赤 */
+    pointer-events: none; /* マウスが枠に当たっても邪魔しない */
+    display: none; 
+    z-index: 10;
+}
+
+/* --- 解析結果の1項目ごとのスタイル --- */
+.result-item {
+    padding: 12px;
+    border-bottom: 1px dotted #ccc;
+    cursor: pointer; /* 重ねた時に指マークにする */
+    transition: background 0.2s;
+}
+
+/* マウスを乗せた時に色を変える */
+.result-item:hover {
+    background-color: #fff1f1;
 }

@@ -149,24 +149,78 @@ $(document).ready(function () {
                 - 過去の類似した図面から、今回の設計で同様のトラブル（加工困難、干渉、強度不足、バリ取り不可など）が発生する可能性を指摘してください。
                 - 形状的に「加工ツールが入らない」「逃げがない」といった、製作上の懸念点があれば列挙してください。
 
-                # Output Format
-                以下の形式でレポートしてください。簡潔にわかりやすく文章をまとめてください。
-                1. 【重大な不整合】（寸法間違いなど）
-                2. 【表現の修正提案】（注記の統一など）
-                3. 【知見に基づくアドバイス】（製作上の注意点）
+                # Output Format （JSONデータのみを返してください。余計な説明文は不要です。）
+                [
+                    {
+                        "category": "重大な不整合",
+                        "text": "正面図の寸法が100ですが、平面図では105になっています。",
+                        "box_2d": [ymin, xmin, ymax, xmax]
+                    }
+                ]
+                ※box_2dは、図面の左上を[0,0]、右下を[1000,1000]とした時の範囲を数値で入れてください。
 
                 日本語で回答してください。
             `;
 
             // ------------------------------------------------
-
             // Geminiへ送信
             const result = await model.generateContent([
                 prompt,
                 { inlineData: { data: base64Data.split(',')[1], mimeType: "application/pdf" } }
             ]);
+            
+
+            // --- Geminiからの回答を受け取った後の処理（書き換え箇所） ---
             const response = await result.response;
-            $resultArea.text(response.text()); // 解析結果を表示
+            const responseText = response.text();
+
+            // AIが返してきたテキストからJSON部分だけを抜き出す
+            const cleanJson = responseText.replace(/```json|```/g, "").trim();
+            const analysisResults = JSON.parse(cleanJson);
+
+            // 表示エリアを一度空にする
+            $resultArea.empty();
+
+            analysisResults.forEach((item) => {
+                // 1. 結果リストの要素を作る
+                const $div = $(`<div class="result-item"><strong>【${item.category}】</strong><br>${item.text}</div>`);
+                
+                // 2. 図面の上に置く「赤い枠」を作る
+                const $highlight = $('<div class="highlight-box"></div>').appendTo('#preview-container');
+
+                // 3. リストにマウスを乗せた時の動き
+                $div.on('mouseenter', () => {
+                    const canvas = $('#preview-container canvas')[0];
+                    if (!canvas) return;
+
+                    // 図面の実際の表示サイズを取得
+                    const cw = canvas.clientWidth;
+                    const ch = canvas.clientHeight;
+                    
+                    // 0-1000の座標をピクセルに変換
+                    const top    = (item.box_2d[0] / 1000) * ch;
+                    const left   = (item.box_2d[1] / 1000) * cw;
+                    const height = ((item.box_2d[2] - item.box_2d[0]) / 1000) * ch;
+                    const width  = ((item.box_2d[3] - item.box_2d[1]) / 1000) * cw;
+
+                    // 赤い枠の位置をセットして表示
+                    $highlight.css({
+                        top: canvas.offsetTop + top,
+                        left: canvas.offsetLeft + left,
+                        width: width,
+                        height: height,
+                        display: 'block'
+                    });
+                });
+
+                // 4. マウスを離した時に枠を消す
+                $div.on('mouseleave', () => {
+                    $highlight.hide();
+                });
+
+                $resultArea.append($div);
+            });
+
 
         } catch (error) {
             console.error(error);

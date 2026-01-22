@@ -13,21 +13,29 @@
 </head>
 
 <body>
-<div id="loading-overlay" class="overlay-hidden">
-    <div class="loader-content">
-        <div class="hourglass">⏳</div>
-        <p>AI解析中です。しばらくお待ちください...</p>
+    <div id="loading-overlay" class="overlay-hidden">
+        <div class="loader-content">
+            <div class="hourglass">⏳</div>
+            <p>AI解析中です。しばらくお待ちください...</p>
+        </div>
     </div>
-</div>
     
     <div class="container">
         <h1>AI Drawing-Analytics system</h1>
 
-        <div id="drop-area">
-            <div id="preview-container">
-                <p class="placeholder-text">ここに図面データをドラッグ＆ドロップ <br> またはクリックして選択</p>
+        <div class="main-layout">
+            <div id="drop-area">
+                <div id="preview-container" style="position: relative;">
+                    <p class="placeholder-text">ここに図面データをドラッグ＆ドロップ <br> またはクリックして選択</p>
+                </div>
+                <input type="file" id="file-input" accept="application/pdf">
             </div>
-            <input type="file" id="file-input" accept="application/pdf">
+
+            <div id="export-area">
+                <div id="result-area">
+                    <p class="result-placeholder">ここに解析結果が表示されます。</p>
+                </div>
+            </div>
         </div>
 
         <div class="button-group">
@@ -35,14 +43,7 @@
             <button id="btn-save-pdf" class="btn">結果をPDF保存</button>
             <button id="btn-exit" class="btn">終了</button>
         </div>
-
-        <div id="export-area">
-            <div id="result-area">
-                <p class="result-placeholder">ここに解析結果が表示されます。</p>
-            </div>
-        </div>
     </div>
-
     <script type="module" src="js/script.js"></script>
 
 </body>
