@@ -25,12 +25,16 @@
 
         <div class="main-layout">
             <div id="drop-area">
-                <div id="preview-container" style="position: relative;">
-                    <p class="placeholder-text">ここに図面データをドラッグ＆ドロップ <br> またはクリックして選択</p>
+                <div id="preview-container">
+                    <div class="upload-placeholder">
+                        <div class="upload-icon">📄</div>
+                        <p class="main-text">図面データをドラッグ＆ドロップ</p>
+                        <p class="sub-text">またはクリックしてファイルを選択</p>
+                        <p class="file-info">対応形式: PDF</p>
+                    </div>
                 </div>
                 <input type="file" id="file-input" accept="application/pdf">
             </div>
-
             <div id="export-area">
                 <div id="result-area">
                     <p class="result-placeholder">ここに解析結果が表示されます。</p>

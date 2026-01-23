@@ -10,35 +10,49 @@ body {
 
 .container {
     width: 98%;      /* 画面を広く使う */
-    max-width: 1400px; 
+    max-width: 1800px; 
+}
+
+
+.header {
+    background: #2c3e50;
+    color: white;
+    padding: 1rem 2rem;
+    margin-bottom: 20px;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 /* --- 2. 左右並びのレイアウト設定（追加） --- */
 .main-layout {
     display: flex;       /* 横並びにする */
     gap: 20px;           /* 左右の隙間 */
-    height: 700px;       /* 全体の高さを固定（これがないとスクロールしません） */
-    align-items: stretch;
+    height: calc(100vh - 180px); /* 画面の高さに合わせる */
+    min-height: 600px;
 }
 
 /* ファイル取込および表示エリア */
 
 #drop-area {
-    flex: 2;             /* 2/3の幅 */
-    margin: 0;           /* 余計なマージンを消す */
-    height: 100%;        /* 親の高さに合わせる */
-    width: 100%;
-    border: 3px dashed #b5b5b5;
-    border-radius: 12px;
+    position: relative;
+    flex: 2;
+    height: 100%;
+    border: 2px dashed #cbd5e0; /* 少し細めのグレーに */
+    border-radius: 16px;
     background-color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* なめらかな変化 */
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    overflow: hidden; /* <- 追加（はみ出した部分は隠す＝枠内に収める前段階） */
-    transition: all 0.3s ease;
-    padding: 10px; /* <- 追加（枠の内側に少し余白を作る） */
-    box-sizing: border-box; /* <- 追加（paddingを含めた幅計算にする） */
+    overflow: hidden;
+}
+
+/* マウスが乗った時やドラッグ中のスタイル */
+#drop-area:hover, #drop-area.highlight {
+    border-color: #4299e1;
+    background-color: #ebf8ff;
+    transform: translateY(-2px); /* ほんの少し浮き上がらせる */
+    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.15);
 }
 
 /* ファイルがドラッグされた時の強調表示 */
@@ -51,9 +65,10 @@ body {
 #preview-container {
     width: 100%;
     height: 100%;
-    display: flex;           /* <- 追加（中身を中央揃えにするため） */
-    align-items: center;     /* <- 追加（上下中央） */
-    justify-content: center; /* <- 追加（左右中央） */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 /* PDFのプレビュー（Canvas）のスタイル */
@@ -63,6 +78,42 @@ body {
     object-fit: contain; /* アスペクト比（縦横比）を維持して枠内に収める */
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
+
+/* プレースホルダーのテキスト類 */
+.upload-placeholder {
+    text-align: center;
+    pointer-events: none; /* テキストが邪魔してドロップできないのを防ぐ */
+}
+
+.upload-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.7;
+}
+
+.main-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+}
+
+.sub-text {
+    font-size: 0.9rem;
+    color: #718096;
+    margin: 5px 0 0;
+}
+
+.file-info {
+    margin-top: 15px;
+    font-size: 0.75rem;
+    color: #a0aec0;
+    background: #edf2f7;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+
 
 .placeholder-text {
     color: #888;
@@ -138,6 +189,16 @@ body {
 .result-placeholder {
     color: #aaa;
 }
+
+/* スクロールバーのカスタマイズ（プロっぽく） */
+#result-area::-webkit-scrollbar {
+    width: 6px;
+}
+#result-area::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 10px;
+}
+
 
 /* ファイル入力は隠す */
 #file-input {

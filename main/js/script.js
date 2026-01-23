@@ -60,30 +60,20 @@ $(document).ready(function () {
 
     // --- 2. PDFを画像として表示する処理 ---
     async function renderPDF(file) {
-        const reader = new FileReader();
-        reader.onload = async function () {
-            const typedarray = new Uint8Array(this.result);
-            // PDFを読み込む
-            const pdf = await pdfjsLib.getDocument(typedarray).promise;
-            // 1ページ目を取得
-            const page = await pdf.getPage(1);
+const reader = new FileReader();
+    reader.onload = async function () {
+        const typedarray = new Uint8Array(this.result);
+        const pdf = await pdfjsLib.getDocument(typedarray).promise;
+        const page = await pdf.getPage(1);
 
-            // プレビューエリアの表示可能サイズを取得
-            const $container = $('#preview-container');
+        const $container = $('#preview-container');
+        
+        // --- 改善ポイント：一度空にしてから描画する ---
+        $container.fadeOut(200, async function() { // ふわっと消す
             const containerWidth = $container.width();
             const containerHeight = $container.height();
-
-            // まずスケール1.0でPDF本来のサイズ情報を取得
             const unscaledViewport = page.getViewport({ scale: 1.0 });
-
-            // 「コンテナの幅 / PDFの幅」と「コンテナの高さ / PDFの高さ」を比較し、
-            // 小さい方の比率に合わせてスケールを決定する（枠内に収めるため）
-            const scaleX = containerWidth / unscaledViewport.width;
-            const scaleY = containerHeight / unscaledViewport.height;
-            // 念のため、計算結果が正の値になるように担保しつつ、小さい方を採用
-            const scale = Math.min(scaleX, scaleY) || 1.0;
-
-            // 計算したスケールを適用してビューポートを作成
+            const scale = Math.min(containerWidth / unscaledViewport.width, containerHeight / unscaledViewport.height) || 1.0;
             const viewport = page.getViewport({ scale: scale });
 
             const canvas = document.createElement('canvas');
@@ -91,14 +81,13 @@ $(document).ready(function () {
             canvas.height = viewport.height;
             canvas.width = viewport.width;
 
-            // CanvasにPDFを描画（画像化）
             await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-            // 表示エリアをクリアしてCanvasを追加
-            $('#preview-container').empty().append(canvas);
-        };
-        reader.readAsArrayBuffer(file);
-    }
+            // コンテナを空にしてCanvasを追加し、ふわっと出す
+            $container.empty().append(canvas).fadeIn(300);
+        });
+    };
+    reader.readAsArrayBuffer(file);    }
 
     // --- 3. 検図開始（Gemini API） ---
     $('#btn-start').on('click', async () => {
@@ -151,6 +140,7 @@ $(document).ready(function () {
 
                 # Output Format
                 必ず以下のJSON形式のみで回答してください。余計な説明文は不要です。
+                「検出した対象物を正確に囲む四角形をbox_2dとして出力してください。特に寸法値の食い違いがある場合は、その両方の箇所がわかるように別々のアイテムとして出力してください。」
                 [
                     {
                         "category": "重大な不整合",   // ←表示用のカテゴリ名
@@ -160,7 +150,6 @@ $(document).ready(function () {
                     }
                 ]
                 ※box_2dは、図面の左上を[0,0]、右下を[1000,1000]とした時の範囲を数値で入れてください。
-
                 日本語で回答してください。
             `;
 
@@ -176,9 +165,24 @@ $(document).ready(function () {
             const response = await result.response;
             const responseText = response.text();
 
-            // AIが返してきたテキストからJSON部分だけを抜き出す
-            const cleanJson = responseText.replace(/```json|```/g, "").trim();
-            const analysisResults = JSON.parse(cleanJson);
+            let analysisResults = [];
+            try {
+                // 文字列の中から [ から始まり ] で終わる部分だけを抜き出す
+                const startBracket = responseText.indexOf('[');
+                const endBracket = responseText.lastIndexOf(']');
+                
+                if (startBracket !== -1 && endBracket !== -1) {
+                    const jsonString = responseText.substring(startBracket, endBracket + 1);
+                    analysisResults = JSON.parse(jsonString);
+                } else {
+                    throw new Error("解析結果の形式が正しくありませんでした。");
+                }
+            } catch (e) {
+                console.error("JSON解析エラー:", e);
+                $resultArea.html('<p style="color:red;">AIの回答を読み取れませんでした。もう一度お試しください。</p>');
+                return; // ここで処理を中断
+            }
+
 
             // 表示エリアを一度空にする
             $resultArea.empty();
@@ -285,6 +289,25 @@ $(document).ready(function () {
             reader.onerror = error => reject(error);
         });
     }
+
+    // // AIの回答からJSONを安全に取り出す関数
+    // function safeParseJSON(text) {
+    //     try {
+    //         // 文字列の中から [ ] の範囲を抽出する
+    //         const start = text.indexOf('[');
+    //         const end = text.lastIndexOf(']');
+    //         if (start === -1 || end === -1) throw new Error("JSON形式が見つかりませんでした。");
+            
+    //         const jsonStr = text.substring(start, end + 1);
+    //         return JSON.parse(jsonStr);
+    //     } catch (e) {
+    //         console.error("Parse Error:", e);
+    //         return null;
+    //     }
+    // }
+
+
+
 
     // --- 4. 終了処理 ---
     $('#btn-exit').on('click', () => {
