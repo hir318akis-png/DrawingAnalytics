@@ -2,33 +2,53 @@
 body {
     font-family: "Helvetica Neue", Arial, sans-serif;
     background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    padding: 10px;
     margin: 0;
+    display: flex;          /* 縦に並べる設定 */
+    flex-direction: column; /* 上から下へ */
+    height: 100vh;          /* 画面の高さぴったりにする */
+    overflow: hidden;       /* 画面全体のスクロールを禁止（中身だけ回す） */
 }
 
+/* --- 書き換え：中身のコンテナ --- */
 .container {
-    width: 98%;      /* 画面を広く使う */
-    max-width: 1800px; 
+    flex: 1;                /* ヘッダー以外の残りスペースを全て使う */
+    width: 100%;
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;          /* 中のmain-layoutを制御 */
+    flex-direction: column;
+    min-height: 0;          /* これがないとスクロールが効かない場合があります */
 }
 
-
-.header {
+/* --- 新規追加：固定ヘッダー --- */
+.app-header {
     background: #2c3e50;
     color: white;
-    padding: 1rem 2rem;
-    margin-bottom: 20px;
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 8px 20px;      /* 少しスリムに */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between; /* タイトルとボタンを左右に分ける */
+    align-items: center;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+.header-content h1 {
+    font-size: 1.2rem;
+    margin: 0;
 }
 
 /* --- 2. 左右並びのレイアウト設定（追加） --- */
 .main-layout {
-    display: flex;       /* 横並びにする */
-    gap: 20px;           /* 左右の隙間 */
-    height: calc(100vh - 180px); /* 画面の高さに合わせる */
-    min-height: 600px;
+    display: flex;
+    gap: 20px;
+    flex: 1;                /* 親のcontainerいっぱいに広げる */
+    min-height: 0;          /* 必須：中身が溢れても親を突き破らない */
 }
 
 /* ファイル取込および表示エリア */
@@ -44,7 +64,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow: auto;
 }
 
 /* マウスが乗った時やドラッグ中のスタイル */
@@ -124,7 +144,7 @@ body {
 /* ボタンのスタイル */
 .button-group {
     display: flex;
-    margin-top: 20px;
+    /* margin-top: 20px; */
     padding: 15px;
     /* background: #fff; */
     /* border-radius: 12px; */
@@ -335,4 +355,28 @@ body {
     font-size: 0.95em;
     line-height: 1.5;
     color: #555;
+}
+
+
+/* --- 新規追加：画面が狭いときの設定 --- */
+@media (max-width: 768px) {
+    body {
+        overflow: auto;     /* スマホは画面全体が流れるようにする */
+        height: auto;
+    }
+
+    .header-content {
+        flex-direction: column; /* タイトルとボタンを上下に */
+        gap: 10px;
+    }
+
+    .main-layout {
+        flex-direction: column; /* 左右並びを「上下」に変更！ */
+        height: auto;
+    }
+
+    #drop-area, #export-area {
+        height: 500px;      /* スマホで見やすい適度な高さに固定 */
+        flex: none;
+    }
 }
