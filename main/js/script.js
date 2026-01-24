@@ -96,8 +96,14 @@ const reader = new FileReader();
             return;
         }
 
-        // --- 【追加】解析開始時の処理 ---
+        // --- 解析開始時の処理 ---
         const $overlay = $('#loading-overlay');
+        $overlay.html(`
+            <div class="loader-content">
+                <div class="hourglass">⏳</div>
+                <p>AIが図面を解析中です...<br>しばらくお待ちください。</p>
+            </div>
+        `);
         $overlay.removeClass('overlay-hidden'); // オーバーレイを表示
         $resultArea.html("<p>解析中... しばらくお待ちください。</p>");
 
