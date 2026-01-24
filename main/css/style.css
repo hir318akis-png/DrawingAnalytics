@@ -19,7 +19,9 @@ body {
     display: flex;          /* 中のmain-layoutを制御 */
     flex-direction: column;
     min-height: 0;          /* これがないとスクロールが効かない場合があります */
+    box-sizing: border-box; /* 追加：パディングを幅に含める */
 }
+
 
 /* --- 新規追加：固定ヘッダー --- */
 .app-header {
@@ -224,7 +226,6 @@ body {
 #file-input {
     display: none;
 }
-
 
 
 
